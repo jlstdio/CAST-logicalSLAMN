@@ -1,0 +1,30 @@
+front:
+  ros__parameters:
+    video_device: "/dev/video0"
+    image_width: 640
+    image_height: 480
+    pixel_format: "yuyv"
+    io_method: "mmap"
+    image_transport: "compressed"
+    compressed:
+      format: "jpeg"
+      jpeg_quality: 80
+      color_format: "rgb8"
+    
+    intrinsic_controls:                 
+      auto_exposure: 3
+      backlight_compensation: 2
+      white_balance_automatic: true
+      power_line_frequency: 1
+      ignore: [
+          brightness,
+          contrast,
+          saturation,
+          hue,
+          gamma,
+          white_balance_temperature,
+          gain,
+          sharpness,
+          exposure_time_absolute,
+          exposure_dynamic_framerate,
+      ]

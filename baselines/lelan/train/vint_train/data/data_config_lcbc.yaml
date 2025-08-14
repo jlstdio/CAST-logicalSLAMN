@@ -1,0 +1,217 @@
+
+# global params for diffusion model
+# normalized min and max
+action_stats:
+  min: [-2.5, -4] # [min_dx, min_dy]
+  max: [5, 4] # [max_dx, max_dy]
+
+# data specific params
+recon:
+  metric_waypoint_spacing: 0.25 # average spacing between waypoints (meters)
+
+  # OPTIONAL (FOR VISUALIZATION ONLY)
+  camera_metrics: # https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html
+    camera_height: 0.95 # meters
+    camera_x_offset: 0.45 # distance between the center of the robot and the forward facing camera
+    camera_matrix:
+      fx: 272.547000
+      fy: 266.358000
+      cx: 320.000000
+      cy: 220.000000
+    dist_coeffs:
+      k1: -0.038483
+      k2: -0.010456
+      p1: 0.003930
+      p2: -0.001007
+      k3: 0.0
+
+scand:
+  metric_waypoint_spacing: 0.38
+
+tartan_drive:
+  metric_waypoint_spacing: 0.72
+
+go_stanford:
+  metric_waypoint_spacing: 0.12
+
+go_stanford2:
+  metric_waypoint_spacing: 0.12
+
+# private datasets:
+cory_hall:
+  metric_waypoint_spacing: 0.06
+
+seattle:
+  metric_waypoint_spacing: 0.35
+
+racer:
+  metric_waypoint_spacing: 0.38
+
+carla_intvns:
+  metric_waypoint_spacing: 1.39
+
+carla_cil:
+  metric_waypoint_spacing: 1.27
+
+carla_intvns:
+  metric_waypoint_spacing: 1.39
+
+carla:
+  metric_waypoint_spacing: 1.59
+  image_path_func: get_image_path
+
+sacson:
+  metric_waypoint_spacing: 0.255
+
+# OBS ONLY LABELLED
+sacson_labelled:
+  metric_waypoint_spacing: 0.255
+cory_hall_labelled:
+  metric_waypoint_spacing: 0.06
+go_stanford_cropped_labelled:
+  metric_waypoint_spacing: 0.12
+go_stanford2_labelled:
+  metric_waypoint_spacing: 0.12
+scand_labelled:
+  metric_waypoint_spacing: 0.38
+tartan_drive_labelled:
+  metric_waypoint_spacing: 0.72
+recon_labelled:
+  metric_waypoint_spacing: 0.25
+seattle_labelled:
+  metric_waypoint_spacing: 0.35
+
+# COUNTERFACTUAL
+scand_cf_v1:
+  metric_waypoint_spacing: 0.38
+sacson_cf_v1:
+  metric_waypoint_spacing: 0.255
+cory_hall_cf_v1:
+  metric_waypoint_spacing: 0.06
+go_stanford_cf_v1:
+  metric_waypoint_spacing: 0.12
+scand_cf_v2:
+  metric_waypoint_spacing: 0.38
+sacson_cf_v2:
+  metric_waypoint_spacing: 0.255
+cory_hall_cf_v2:
+  metric_waypoint_spacing: 0.06
+go_stanford_cf_v2:
+  metric_waypoint_spacing: 0.12
+go_stanford2_cf:
+  metric_waypoint_spacing: 0.12
+recon_cf:
+  metric_waypoint_spacing: 0.25
+seattle_cf:
+  metric_waypoint_spacing: 0.35
+tartan_drive_cf:
+  metric_waypoint_spacing: 0.72
+
+
+# ATOMIC
+sacson_atomic_left: 
+  metric_waypoint_spacing: 0.255
+sacson_atomic_right: 
+  metric_waypoint_spacing: 0.255
+sacson_atomic_forward: 
+  metric_waypoint_spacing: 0.255
+sacson_atomic_stop: 
+  metric_waypoint_spacing: 0.255
+sacson_atomic_adjust_left:
+  metric_waypoint_spacing: 0.255
+sacson_atomic_adjust_right:
+  metric_waypoint_spacing: 0.255
+
+
+cory_hall_atomic_left: 
+  metric_waypoint_spacing: 0.06
+cory_hall_atomic_right: 
+  metric_waypoint_spacing: 0.06
+cory_hall_atomic_forward: 
+  metric_waypoint_spacing: 0.06
+cory_hall_atomic_stop: 
+  metric_waypoint_spacing: 0.06
+cory_hall_atomic_adjust_left:
+  metric_waypoint_spacing: 0.06
+cory_hall_atomic_adjust_right:
+  metric_waypoint_spacing: 0.06
+
+go_stanford_cropped_atomic_left:
+  metric_waypoint_spacing: 0.12
+go_stanford_cropped_atomic_right:
+  metric_waypoint_spacing: 0.12
+go_stanford_cropped_atomic_forward:
+  metric_waypoint_spacing: 0.12
+go_stanford_cropped_atomic_stop:
+  metric_waypoint_spacing: 0.12
+go_stanford_cropped_atomic_adjust_left:
+  metric_waypoint_spacing: 0.12
+go_stanford_cropped_atomic_adjust_right:
+  metric_waypoint_spacing: 0.12
+
+go_stanford2_atomic_left:
+  metric_waypoint_spacing: 0.12
+go_stanford2_atomic_right:
+  metric_waypoint_spacing: 0.12
+go_stanford2_atomic_forward:
+  metric_waypoint_spacing: 0.12
+go_stanford2_atomic_stop:
+  metric_waypoint_spacing: 0.12
+go_stanford2_atomic_adjust_left:
+  metric_waypoint_spacing: 0.12
+go_stanford2_atomic_adjust_right:
+  metric_waypoint_spacing: 0.12
+
+scand_atomic_left:
+  metric_waypoint_spacing: 0.38
+scand_atomic_right:
+  metric_waypoint_spacing: 0.38
+scand_atomic_forward:
+  metric_waypoint_spacing: 0.38
+scand_atomic_stop:
+  metric_waypoint_spacing: 0.38
+scand_atomic_adjust_left:
+  metric_waypoint_spacing: 0.38
+scand_atomic_adjust_right:
+  metric_waypoint_spacing: 0.38
+
+tartan_drive_atomic_left:
+  metric_waypoint_spacing: 0.72
+tartan_drive_atomic_right:
+  metric_waypoint_spacing: 0.72
+tartan_drive_atomic_forward:
+  metric_waypoint_spacing: 0.72
+tartan_drive_atomic_stop:
+  metric_waypoint_spacing: 0.72
+tartan_drive_atomic_adjust_left:
+  metric_waypoint_spacing: 0.72
+tartan_drive_atomic_adjust_right:
+  metric_waypoint_spacing: 0.72
+
+seattle_atomic_left:
+  metric_waypoint_spacing: 0.35
+seattle_atomic_right:
+  metric_waypoint_spacing: 0.35
+seattle_atomic_forward:
+  metric_waypoint_spacing: 0.35
+seattle_atomic_stop:
+  metric_waypoint_spacing: 0.35
+seattle_atomic_adjust_left:
+  metric_waypoint_spacing: 0.35
+seattle_atomic_adjust_right:
+  metric_waypoint_spacing: 0.35
+
+recon_atomic_left:
+  metric_waypoint_spacing: 0.25
+recon_atomic_right:
+  metric_waypoint_spacing: 0.25
+recon_atomic_forward:
+  metric_waypoint_spacing: 0.25
+recon_atomic_stop:
+  metric_waypoint_spacing: 0.25
+recon_atomic_adjust_left:
+  metric_waypoint_spacing: 0.25
+recon_atomic_adjust_right:
+  metric_waypoint_spacing: 0.25
+
+# add your own dataset params here:

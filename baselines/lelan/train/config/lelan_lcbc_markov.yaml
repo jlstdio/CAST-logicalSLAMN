@@ -1,0 +1,564 @@
+project_name: lcbc
+run_name: lelan_baseline
+
+# training setup
+use_wandb: True # set to false if you don't want to log to wandb
+train: True
+batch_size: 768
+epochs: 200
+gpu_ids: [6]
+all_gpu_ids: [0,1,2,3,4,5,6,7]
+num_workers: 12
+lr: 1e-4
+optimizer: adamw
+clipping: False
+max_norm: 1.
+scheduler: "cosine"
+warmup: True 
+warmup_epochs: 4
+cyclic_period: 10
+plateau_patience: 3
+plateau_factor: 0.5
+seed: 0
+
+# model params
+model_type: lelan #lnp_freeze_clip
+vision_encoder: lelan_clip_film
+encoding_size: 256
+obs_encoder: efficientnet-b0
+clip_type: "ViT-B/32"
+cond_predict_scale: False
+mha_num_attention_heads: 4
+mha_num_attention_layers: 4
+mha_ff_dim_factor: 4
+down_dims: [64, 128, 256]
+feature_size: 1024
+
+# diffusion model params
+num_diffusion_iters: 10
+
+# normalization for the action space
+normalize: True
+
+# context
+context_type: temporal
+context_size: 0 # 5
+alpha: 0.01
+
+# distance bounds for distance and action and distance predictions 
+distance:
+  min_dist_cat: 0
+  max_dist_cat: 25
+action:
+  min_dist_cat: 2
+  max_dist_cat: 25
+
+# action output params
+len_traj_pred: 8
+learn_angle: False
+
+# dataset specific parameters
+image_size: [96, 96] # width, height
+datasets:
+  # OBS ONLY LABELS
+  sacson_labelled:
+    data_folder: /home/cglossop/lcbc_datasets/sacson_labelled/
+    train: /home/cglossop/vlm-guidance/data/data_splits/sacson_labelled/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/sacson_labelled/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: True # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.5
+  cory_hall_labelled:
+    data_folder: /home/cglossop/lcbc_datasets/cory_hall_labelled/
+    train: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_labelled/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_labelled/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: True # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.5
+  go_stanford_cropped_labelled:
+    data_folder: /home/cglossop/lcbc_datasets/go_stanford_cropped_labelled/
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cropped_labelled/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cropped_labelled/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: True # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.5
+  recon_labelled:
+    data_folder: /home/cglossop/lcbc_datasets/recon_labelled/
+    train: /home/cglossop/vlm-guidance/data/data_splits/recon_labelled/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/recon_labelled/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 3 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: True # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.5
+  tartan_drive_labelled:
+    data_folder: /home/cglossop/lcbc_datasets/tartan_drive_labelled/
+    train: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_labelled/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_labelled/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 3 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: True # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.5
+  go_stanford2_labelled:
+    data_folder: /home/cglossop/lcbc_datasets/go_stanford2_labelled/
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_labelled/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_labelled/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 3 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: True # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.5
+  seattle_labelled:
+    data_folder: /home/cglossop/lcbc_datasets/seattle_labelled/
+    train: /home/cglossop/vlm-guidance/data/data_splits/seattle_labelled/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/seattle_labelled/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 3 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: True # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.5
+  scand_labelled:
+    data_folder: /home/cglossop/lcbc_datasets/scand_labelled/
+    train: /home/cglossop/vlm-guidance/data/data_splits/scand_labelled/train/
+    test: /home/cglossop/vlm-guidance/data/data_splits/scand_labelled/test/
+    traj_file: traj_data.pkl
+    end_slack: 0
+    goals_per_obs: 1
+    negative_mining: True
+    weight: 0.5
+
+  # ATOMIC LABELS
+  sacson_atomic_left:
+    data_folder: /home/cglossop/atomic_dataset/sacson/turn_left/
+    train: /home/cglossop/vlm-guidance/data/data_splits/sacson_atomic_left/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/sacson_atomic_left/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  sacson_atomic_right:
+    data_folder: /home/cglossop/atomic_dataset/sacson/turn_right/
+    train: /home/cglossop/vlm-guidance/data/data_splits/sacson_atomic_right/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/sacson_atomic_right/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  sacson_atomic_forward:
+    data_folder: /home/cglossop/atomic_dataset/sacson/go_forward
+    train: /home/cglossop/vlm-guidance/data/data_splits/sacson_atomic_forward/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/sacson_atomic_forward/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  sacson_atomic_stop:
+    data_folder: /home/cglossop/atomic_dataset/sacson/stop
+    train: /home/cglossop/vlm-guidance/data/data_splits/sacson_atomic_stop/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/sacson_atomic_stop/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  cory_hall_atomic_left:
+    data_folder: /home/cglossop/atomic_dataset/cory_hall/turn_left
+    train: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_atomic_left/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_atomic_left/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  cory_hall_atomic_right:
+    data_folder: /home/cglossop/atomic_dataset/cory_hall/turn_right
+    train: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_atomic_right/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_atomic_right/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  cory_hall_atomic_forward:
+    data_folder: /home/cglossop/atomic_dataset/cory_hall/go_forward
+    train: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_atomic_forward/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_atomic_forward/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  cory_hall_atomic_stop:
+    data_folder: /home/cglossop/atomic_dataset/cory_hall/stop
+    train: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_atomic_stop/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_atomic_stop/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  seattle_atomic_left:
+    data_folder: /home/cglossop/atomic_dataset/seattle/turn_left
+    train: /home/cglossop/vlm-guidance/data/data_splits/seattle_atomic_left/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/seattle_atomic_left/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  seattle_atomic_right:
+    data_folder: /home/cglossop/atomic_dataset/seattle/turn_right
+    train: /home/cglossop/vlm-guidance/data/data_splits/seattle_atomic_right/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/seattle_atomic_right/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  seattle_atomic_forward:
+    data_folder: /home/cglossop/atomic_dataset/seattle/go_forward
+    train: /home/cglossop/vlm-guidance/data/data_splits/seattle_atomic_forward/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/seattle_atomic_forward/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  seattle_atomic_stop:
+    data_folder: /home/cglossop/atomic_dataset/seattle/stop
+    train: /home/cglossop/vlm-guidance/data/data_splits/seattle_atomic_stop/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/seattle_atomic_stop/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  tartan_drive_atomic_left: 
+    data_folder: /home/cglossop/atomic_dataset/tartan_drive/turn_left
+    train: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_atomic_left/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_atomic_left/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  tartan_drive_atomic_right: 
+    data_folder: /home/cglossop/atomic_dataset/tartan_drive/turn_right
+    train: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_atomic_right/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_atomic_right/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  tartan_drive_atomic_forward: 
+    data_folder: /home/cglossop/atomic_dataset/tartan_drive/go_forward
+    train: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_atomic_forward/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_atomic_forward/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  tartan_drive_atomic_stop: 
+    data_folder: /home/cglossop/atomic_dataset/tartan_drive/stop
+    train: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_atomic_stop/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_atomic_stop/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  recon_atomic_left:
+    data_folder: /home/cglossop/atomic_dataset/recon/turn_left
+    train: /home/cglossop/vlm-guidance/data/data_splits/recon_atomic_left/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/recon_atomic_left/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  recon_atomic_right:
+    data_folder: /home/cglossop/atomic_dataset/recon/turn_right
+    train: /home/cglossop/vlm-guidance/data/data_splits/recon_atomic_right/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/recon_atomic_right/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  recon_atomic_forward:
+    data_folder: /home/cglossop/atomic_dataset/recon/go_forward
+    train: /home/cglossop/vlm-guidance/data/data_splits/recon_atomic_forward/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/recon_atomic_forward/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  recon_atomic_stop:
+    data_folder: /home/cglossop/atomic_dataset/recon/stop
+    train: /home/cglossop/vlm-guidance/data/data_splits/recon_atomic_stop/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/recon_atomic_stop/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  go_stanford_cropped_atomic_left:
+    data_folder: /home/cglossop/atomic_dataset/go_stanford_cropped/turn_left
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cropped_atomic_left/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cropped_atomic_left/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  go_stanford_cropped_atomic_right:
+    data_folder: /home/cglossop/atomic_dataset/go_stanford_cropped/turn_right
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cropped_atomic_right/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cropped_atomic_right/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  go_stanford_cropped_atomic_forward:
+    data_folder: /home/cglossop/atomic_dataset/go_stanford_cropped/go_forward
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cropped_atomic_forward/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cropped_atomic_forward/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  go_stanford_cropped_atomic_stop:
+    data_folder: /home/cglossop/atomic_dataset/go_stanford_cropped/stop
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cropped_atomic_stop/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cropped_atomic_stop/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  scand_atomic_left:
+    data_folder: /home/cglossop/atomic_dataset/scand/turn_left
+    train: /home/cglossop/vlm-guidance/data/data_splits/scand_atomic_left/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/scand_atomic_left/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  scand_atomic_right:
+    data_folder: /home/cglossop/atomic_dataset/scand/turn_right
+    train: /home/cglossop/vlm-guidance/data/data_splits/scand_atomic_right/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/scand_atomic_right/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  scand_atomic_forward:
+    data_folder: /home/cglossop/atomic_dataset/scand/go_forward
+    train: /home/cglossop/vlm-guidance/data/data_splits/scand_atomic_forward/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/scand_atomic_forward/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  scand_atomic_stop:
+    data_folder: /home/cglossop/atomic_dataset/scand/stop
+    train: /home/cglossop/vlm-guidance/data/data_splits/scand_atomic_stop/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/scand_atomic_stop/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  go_stanford2_atomic_left:
+    data_folder: /home/cglossop/atomic_dataset/go_stanford2/turn_left
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_left/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_left/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  go_stanford2_atomic_adjust_left:
+    data_folder: /home/cglossop/atomic_dataset/go_stanford2/adjust_left
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_adjust_left/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_adjust_left/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  go_stanford2_atomic_right:
+    data_folder: /home/cglossop/atomic_dataset/go_stanford2/turn_right
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_right/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_right/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  go_stanford2_atomic_adjust_right:
+    data_folder: /home/cglossop/atomic_dataset/go_stanford2/adjust_right
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_adjust_right/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_adjust_right/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  go_stanford2_atomic_forward:
+    data_folder: /home/cglossop/atomic_dataset/go_stanford2/go_forward
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_forward/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_forward/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  go_stanford2_atomic_stop:
+    data_folder: /home/cglossop/atomic_dataset/go_stanford2/stop
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_stop/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_atomic_stop/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+
+  # COUNTERFACTUAL DATASETS
+  go_stanford_cf_v1:
+    data_folder: /home/cglossop/lcbc_datasets/go_stanford_cf_v1/
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cf_v1/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cf_v1/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  go_stanford_cf_v2:
+    data_folder: /home/cglossop/lcbc_datasets/go_stanford_cf_v2/
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cf_v2/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford_cf_v2/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  scand_cf_v1:
+    data_folder: /home/cglossop/lcbc_datasets/scand_cf_v1/
+    train: /home/cglossop/vlm-guidance/data/data_splits/scand_cf_v1/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/scand_cf_v1/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  scand_cf_v2:
+    data_folder: /home/cglossop/lcbc_datasets/scand_cf_v2/
+    train: /home/cglossop/vlm-guidance/data/data_splits/scand_cf_v2/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/scand_cf_v2/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  cory_hall_cf_v1:
+    data_folder: /home/cglossop/lcbc_datasets/cory_hall_cf_v1/
+    train: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_cf_v1/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_cf_v1/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  cory_hall_cf_v2:
+    data_folder: /home/cglossop/lcbc_datasets/cory_hall_cf_v2/
+    train: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_cf_v2/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/cory_hall_cf_v2/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  sacson_cf_v1:
+    data_folder: /home/cglossop/lcbc_datasets/sacson_cf_v1/
+    train: /home/cglossop/vlm-guidance/data/data_splits/sacson_cf_v1/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/sacson_cf_v1/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  sacson_cf_v2:
+    data_folder: /home/cglossop/lcbc_datasets/sacson_cf_v2/
+    train: /home/cglossop/vlm-guidance/data/data_splits/sacson_cf_v2/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/sacson_cf_v2/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.25
+  recon_cf:
+    data_folder: /home/cglossop/lcbc_datasets/recon_cf/
+    train: /home/cglossop/vlm-guidance/data/data_splits/recon_cf/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/recon_cf/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.5
+  tartan_drive_cf:
+    data_folder: /home/cglossop/lcbc_datasets/tartan_drive_cf/
+    train: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_cf/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/tartan_drive_cf/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.5
+  seattle_cf:
+    data_folder: /home/cglossop/lcbc_datasets/seattle_cf/
+    train: /home/cglossop/vlm-guidance/data/data_splits/seattle_cf/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/seattle_cf/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.5
+  go_stanford2_cf:
+    data_folder: /home/cglossop/lcbc_datasets/go_stanford2_cf/
+    train: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_cf/train/ # path to train folder with traj_names.txt
+    test: /home/cglossop/vlm-guidance/data/data_splits/go_stanford2_cf/test/ # path to test folder with traj_names.txt
+    traj_file: traj_data_filtered.pkl
+    end_slack: 0 # because many trajectories end in collisions
+    goals_per_obs: 1 # how many goals are sampled per observation
+    negative_mining: False # negative mining from the ViNG paper (Shah et al.)
+    weight: 0.5
+  
+# logging stuff
+## =0 turns off
+print_log_freq: 100 # in iterations
+image_log_freq: 1000 #0 # in iterations
+num_images_log: 8 #0 
+pairwise_test_freq: 0 # in epochs
+eval_fraction: 0.25
+wandb_log_freq: 10 # in iterations
+eval_freq: 1 # in epochs
+save_freq: 5 # in epochs

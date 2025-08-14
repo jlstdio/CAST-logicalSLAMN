@@ -1,0 +1,5 @@
+pia_planning_model: 
+  config_path: "atomic.yaml"
+  ckpt_path: "atomic_model.pth"
+
+

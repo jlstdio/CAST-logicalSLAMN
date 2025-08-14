@@ -1,0 +1,6 @@
+[submodule "baselines/lelan"]
+	path = baselines/lelan
+	url = git@github.com:catglossop/lelan.git
+[submodule "cast-vla"]
+	path = cast-vla
+	url = git@github.com:catglossop/cast-vla.git

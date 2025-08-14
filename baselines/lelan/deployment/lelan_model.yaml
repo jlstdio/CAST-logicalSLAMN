@@ -1,0 +1,5 @@
+lelan: 
+  config_path: "lelan_lcbc.yaml"
+  ckpt_path: "lelan_ckpts/30.pth"
+
+
