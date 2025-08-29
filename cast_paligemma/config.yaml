@@ -20,6 +20,8 @@ data:
   test_split: "test"
   cache_dir: "./cache"
   num_workers: 4
+  # Alternative: specify local data directory with TAR files
+  local_data_dir: null  # Set to path containing TAR files if HF dataset fails
   
 # Training Configuration
 training:

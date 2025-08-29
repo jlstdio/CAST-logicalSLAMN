@@ -11,6 +11,9 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional
 import torchvision.transforms as transforms
 from action_tokenizer import ActionTokenizer, ActionNormalizer
+import os
+import tarfile
+import json
 
 
 class CASTDataset(Dataset):
@@ -44,11 +47,34 @@ class CASTDataset(Dataset):
         
         # Load dataset from HuggingFace
         print(f"Loading CAST dataset split: {split}")
-        self.dataset = load_dataset(
-            "catglossop/CAST-dataset", 
-            split=split,
-            cache_dir=cache_dir
-        )
+        try:
+            self.dataset = load_dataset(
+                "catglossop/CAST-dataset", 
+                split=split,
+                cache_dir=cache_dir,
+                trust_remote_code=True
+            )
+        except ValueError as e:
+            if "WebDataset format" in str(e):
+                print(f"WebDataset format error: {e}")
+                print("Attempting to load with different data format...")
+                try:
+                    self.dataset = load_dataset(
+                        "catglossop/CAST-dataset", 
+                        split=split,
+                        cache_dir=cache_dir,
+                        streaming=False
+                    )
+                except Exception as e2:
+                    print(f"Failed to load dataset: {e2}")
+                    print("Trying alternative loading method...")
+                    try:
+                        self.dataset = load_dataset("catglossop/CAST-dataset", cache_dir=cache_dir, verification_mode="no_checks")[split]
+                    except Exception as e3:
+                        print(f"All loading methods failed: {e3}")
+                        raise e3
+            else:
+                raise e
         print(f"Loaded {len(self.dataset)} samples")
         
         # Image preprocessing
@@ -191,8 +217,29 @@ def prepare_cast_data(
     """
     print("Loading dataset to compute action statistics...")
     
-    # Load training data to compute statistics
-    temp_dataset = load_dataset("catglossop/CAST-dataset", split=train_split, cache_dir=cache_dir)
+    # Try to load dataset with different strategies
+    try:
+        # First try: Load as regular dataset (not WebDataset)
+        temp_dataset = load_dataset("catglossop/CAST-dataset", split=train_split, cache_dir=cache_dir, trust_remote_code=True)
+    except ValueError as e:
+        if "WebDataset format" in str(e):
+            print(f"WebDataset format error: {e}")
+            print("Attempting to load with different data format...")
+            try:
+                # Second try: Load without specifying format
+                temp_dataset = load_dataset("catglossop/CAST-dataset", split=train_split, cache_dir=cache_dir, streaming=False)
+            except Exception as e2:
+                print(f"Failed to load dataset: {e2}")
+                print("Trying alternative loading method...")
+                try:
+                    # Third try: Load dataset without WebDataset assumptions
+                    temp_dataset = load_dataset("catglossop/CAST-dataset", cache_dir=cache_dir, verification_mode="no_checks")[train_split]
+                except Exception as e3:
+                    print(f"All loading methods failed. Last error: {e3}")
+                    print("Please check that the dataset is properly formatted or provide local data path")
+                    raise e3
+        else:
+            raise e
     
     # Extract all actions to compute statistics
     all_actions = []
