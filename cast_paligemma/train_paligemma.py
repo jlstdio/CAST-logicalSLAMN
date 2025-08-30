@@ -86,7 +86,9 @@ class PaliGemmaCASTTrainer:
             val_split=self.config['data']['val_split'],
             image_size=tuple(self.config['model']['image_size']),
             vocab_size=self.config['action']['vocab_size'],
-            cache_dir=self.config['data']['cache_dir']
+            cache_dir=self.config['data']['cache_dir'],
+            local_data_dir=self.config['data'].get('local_data_dir'),
+            dataset_name=self.config['data']['dataset_name']
         )
         
         # Create collator
