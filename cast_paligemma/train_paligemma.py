@@ -41,7 +41,7 @@ class PaliGemmaCASTTrainer:
     def __init__(self, config: dict):
         """Initialize trainer with configuration."""
         self.config = config
-        self.device = torch.device(config['hardware']['device'])
+        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         
         # Create output directories
         os.makedirs(config['output']['output_dir'], exist_ok=True)
@@ -68,7 +68,7 @@ class PaliGemmaCASTTrainer:
         self.model = PaliGemmaForConditionalGeneration.from_pretrained(
             self.config['model']['name'],
             torch_dtype=torch.bfloat16 if self.config['hardware']['mixed_precision'] else torch.float32,
-            device_map="auto" if torch.cuda.device_count() > 1 else None
+            device_map=self.device
         )
         
         if torch.cuda.device_count() <= 1:
